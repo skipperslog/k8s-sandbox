@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hamsa-ledger-config
+data:
+  SERVICE_NAME: "hamsa-ledger"
+  WELCOME_MSG: "hello from the sandbox"

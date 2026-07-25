@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hamsa-ledger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hamsa-ledger
+  template:
+    metadata:
+      labels:
+        app: hamsa-ledger
+    spec:
+      containers:
+        - name: hamsa-ledger
+          image: hamsa-ledger:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: hamsa-ledger-config
+            - secretRef:
+                name: hamsa-ledger-secret
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
