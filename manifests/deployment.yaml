@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: hamsa-ledger
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: hamsa-ledger
