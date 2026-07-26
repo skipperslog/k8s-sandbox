@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hamsa-ledger
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: hamsa-ledger
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
