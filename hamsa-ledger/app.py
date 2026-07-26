@@ -9,6 +9,7 @@ SERVICE_NAME = os.environ.get("SERVICE_NAME", "hamsa-ledger")
 WELCOME_MSG = os.environ.get("WELCOME_MSG", "mock ledger service")
 API_TOKEN = os.environ.get("API_TOKEN", "unset")
 
+# fake in-memory "ledger" -- no real data, just enough to query
 FAKE_ACCOUNTS = {
     "acct-1001": {"balance": 542.10, "currency": "USD"},
     "acct-1002": {"balance": 12890.55, "currency": "USD"},
@@ -21,7 +22,9 @@ def index():
 
 @app.route("/balance/<account_id>")
 def balance(account_id):
-    account = FAKE_ACCOUNTS[account_id]
+    account = FAKE_ACCOUNTS.get(account_id)
+    if account is None:
+        return jsonify({"error": "account not found"}), 404
     return jsonify({"account_id": account_id, **account})
 
 @app.route("/healthz")
