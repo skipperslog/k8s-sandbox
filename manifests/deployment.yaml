@@ -14,10 +14,11 @@ spec:
     spec:
       containers:
         - name: hamsa-ledger
-          image: hamsa-ledger:latest
+          image: hamsa-ledger:v3
           imagePullPolicy: Never
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
           envFrom:
             - configMapRef:
                 name: hamsa-ledger-config
