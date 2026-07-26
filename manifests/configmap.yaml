@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: hamsa-ledger-config
+  name: smartx-ledger-config
 data:
-  SERVICE_NAME: "hamsa-ledger"
+  SERVICE_NAME: "smartx-ledger"
   WELCOME_MSG: "hello from the sandbox"

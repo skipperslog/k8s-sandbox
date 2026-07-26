@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: hamsa-ledger
+  name: smartx-ledger
   namespace: argocd
 spec:
   project: default

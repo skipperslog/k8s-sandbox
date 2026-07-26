@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hamsa-ledger
+  name: smartx-ledger
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: hamsa-ledger
+      app: smartx-ledger
   template:
     metadata:
       labels:
-        app: hamsa-ledger
+        app: smartx-ledger
     spec:
       containers:
-        - name: hamsa-ledger
-          image: hamsa-ledger:v5
+        - name: smartx-ledger
+          image: smartx-ledger:v5
           imagePullPolicy: Never
           ports:
             - name: http
               containerPort: 8080
           envFrom:
             - configMapRef:
-                name: hamsa-ledger-config
+                name: smartx-ledger-config
             - secretRef:
-                name: hamsa-ledger-secret
+                name: smartx-ledger-secret
           livenessProbe:
             httpGet:
               path: /healthz

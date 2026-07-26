@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 
-SERVICE_NAME = os.environ.get("SERVICE_NAME", "hamsa-ledger")
+SERVICE_NAME = os.environ.get("SERVICE_NAME", "smartx-ledger")
 WELCOME_MSG = os.environ.get("WELCOME_MSG", "mock ledger service")
 API_TOKEN = os.environ.get("API_TOKEN", "unset")
 

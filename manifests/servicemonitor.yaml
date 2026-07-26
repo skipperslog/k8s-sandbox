@@ -1,13 +1,13 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: hamsa-ledger
+  name: smartx-ledger
   labels:
     release: monitoring
 spec:
   selector:
     matchLabels:
-      app: hamsa-ledger
+      app: smartx-ledger
   endpoints:
     - port: http
       path: /metrics
