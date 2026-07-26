@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: hamsa-ledger
-          image: hamsa-ledger:v3
+          image: hamsa-ledger:v4
           imagePullPolicy: Never
           ports:
             - name: http
