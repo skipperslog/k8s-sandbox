@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: smartx-ledger
-          image: docker.io/pb26457093/smartx-ledger:7
+          image: docker.io/pb26457093/smartx-ledger:8
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
