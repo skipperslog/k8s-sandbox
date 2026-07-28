@@ -1,1 +1,3 @@
 kube-prometheus-stack/
+__pycache__/
+*.pyc
