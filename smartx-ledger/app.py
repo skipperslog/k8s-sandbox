@@ -6,7 +6,7 @@ app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 
 SERVICE_NAME = os.environ.get("SERVICE_NAME", "smartx-ledger")
-WELCOME_MSG = os.environ.get("WELCOME_MSG", "mock ledger service")
+WELCOME_MSG = os.environ.get("WELCOME_MSG", "ledger service v2")
 API_TOKEN = os.environ.get("API_TOKEN", "unset")
 
 # fake in-memory "ledger" -- no real data, just enough to query

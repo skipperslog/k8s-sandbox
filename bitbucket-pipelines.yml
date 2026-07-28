@@ -4,6 +4,8 @@ pipelines:
   default:
     - step:
         name: Test
+        caches:
+          - pip
         script:
           - cd smartx-ledger
           - pip install -r requirements.txt -r requirements-dev.txt
@@ -23,3 +25,14 @@ pipelines:
           - docker buildx inspect --bootstrap
           - docker run --rm --privileged tonistiigi/binfmt --install arm64
           - docker buildx build --platform linux/arm64 -t "$DOCKERHUB_USERNAME/smartx-ledger:$BITBUCKET_BUILD_NUMBER" --push .
+    - step:
+        name: Update manifest
+        image: alpine/git:latest
+        script:
+          - git clone --depth 1 https://x-access-token:$GITHUB_TOKEN@github.com/skipperslog/k8s-sandbox.git deploy
+          - cd deploy
+          - sed -i "s|image: docker.io/$DOCKERHUB_USERNAME/smartx-ledger:.*|image: docker.io/$DOCKERHUB_USERNAME/smartx-ledger:$BITBUCKET_BUILD_NUMBER|" manifests/deployment.yaml
+          - git config user.email ci@bitbucket
+          - git config user.name "Bitbucket Pipelines"
+          - git commit -am "Deploy smartx-ledger:$BITBUCKET_BUILD_NUMBER" || exit 0
+          - git push
