@@ -1,8 +1,8 @@
 image: python:3.12-slim
 
-pipelines:
-  default:
-    - step:
+definitions:
+  steps:
+    - step: &test
         name: Test
         caches:
           - pip
@@ -10,29 +10,49 @@ pipelines:
           - cd smartx-ledger
           - pip install -r requirements.txt -r requirements-dev.txt
           - pytest -q
-    - step:
-        name: Build and push image
-        runtime:
-          cloud:
-            version: "3"
-        image: docker:28-cli
-        services:
-          - docker
-        script:
-          - cd smartx-ledger
-          - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          - docker buildx create --name multiarch --driver docker-container --use
-          - docker buildx inspect --bootstrap
-          - docker run --rm --privileged tonistiigi/binfmt --install arm64
-          - docker buildx build --platform linux/arm64 -t "$DOCKERHUB_USERNAME/smartx-ledger:$BITBUCKET_BUILD_NUMBER" --push .
-    - step:
-        name: Update manifest
-        image: alpine/git:latest
-        script:
-          - git clone --depth 1 https://x-access-token:$GITHUB_TOKEN@github.com/skipperslog/k8s-sandbox.git deploy
-          - cd deploy
-          - 'sed -i "s|smartx-ledger:.*|smartx-ledger:$BITBUCKET_BUILD_NUMBER|" manifests/deployment.yaml'
-          - git config user.email ci@bitbucket
-          - git config user.name "Bitbucket Pipelines"
-          - 'git commit -am "Deploy smartx-ledger:$BITBUCKET_BUILD_NUMBER" || exit 0'
-          - git push
+
+pipelines:
+  pull-requests:
+    '**':
+      - step: *test
+
+  branches:
+    main:
+      - step: *test
+      - step:
+          name: Build and push image
+          runtime:
+            cloud:
+              version: "3"
+          image: docker:28-cli
+          services:
+            - docker
+          script:
+            - cd smartx-ledger
+            - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            - docker buildx create --name multiarch --driver docker-container --use
+            - docker buildx inspect --bootstrap
+            - docker run --rm --privileged tonistiigi/binfmt --install arm64
+            - docker buildx build --platform linux/arm64 -t "$DOCKERHUB_USERNAME/smartx-ledger:$BITBUCKET_BUILD_NUMBER" --push .
+      - step:
+          name: Deploy to staging
+          deployment: staging
+          image: alpine/git:latest
+          script:
+            - git clone --depth 1 https://x-access-token:$GITHUB_TOKEN@github.com/skipperslog/k8s-sandbox.git deploy
+            - cd deploy
+            - 'sed -i "s|smartx-ledger:.*|smartx-ledger:$BITBUCKET_BUILD_NUMBER|" manifests/deployment.yaml'
+            - git config user.email ci@bitbucket
+            - git config user.name "Bitbucket Pipelines"
+            - 'git commit -am "Deploy smartx-ledger:$BITBUCKET_BUILD_NUMBER" || exit 0'
+            - git push
+      - step:
+          name: Promote to production
+          deployment: production
+          trigger: manual
+          image: docker:28-cli
+          services:
+            - docker
+          script:
+            - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            - docker buildx imagetools create -t "$DOCKERHUB_USERNAME/smartx-ledger:stable" "$DOCKERHUB_USERNAME/smartx-ledger:$BITBUCKET_BUILD_NUMBER"
