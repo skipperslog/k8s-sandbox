@@ -31,8 +31,8 @@ pipelines:
         script:
           - git clone --depth 1 https://x-access-token:$GITHUB_TOKEN@github.com/skipperslog/k8s-sandbox.git deploy
           - cd deploy
-          - sed -i "s|image: docker.io/$DOCKERHUB_USERNAME/smartx-ledger:.*|image: docker.io/$DOCKERHUB_USERNAME/smartx-ledger:$BITBUCKET_BUILD_NUMBER|" manifests/deployment.yaml
+          - 'sed -i "s|smartx-ledger:.*|smartx-ledger:$BITBUCKET_BUILD_NUMBER|" manifests/deployment.yaml'
           - git config user.email ci@bitbucket
           - git config user.name "Bitbucket Pipelines"
-          - git commit -am "Deploy smartx-ledger:$BITBUCKET_BUILD_NUMBER" || exit 0
+          - 'git commit -am "Deploy smartx-ledger:$BITBUCKET_BUILD_NUMBER" || exit 0'
           - git push
