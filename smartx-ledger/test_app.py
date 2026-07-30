@@ -28,3 +28,7 @@ def test_unknown_account_returns_404(client):
 def test_healthz_ok(client):
     r = client.get("/healthz")
     assert r.status_code == 200
+
+
+def test_deliberately_broken():
+    assert 1 == 2
