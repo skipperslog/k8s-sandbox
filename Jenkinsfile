@@ -35,5 +35,24 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                withCredentials([string(
+                        credentialsId: 'github-token',
+                        variable: 'GH_TOKEN')]) {
+                    sh '''
+                        rm -rf deploy
+                        git clone --depth 1 https://x-access-token:$GH_TOKEN@github.com/skipperslog/k8s-sandbox.git deploy
+                        cd deploy
+                        sed -i "s|smartx-ledger:.*|smartx-ledger:jenkins-$BUILD_NUMBER|" manifests/deployment.yaml
+                        git config user.name "Jenkins"
+                        git config user.email "jenkins@localhost"
+                        git commit -am "Deploy smartx-ledger:jenkins-$BUILD_NUMBER" || exit 0
+                        git push
+                    '''
+                }
+            }
+        }
     }
 }
